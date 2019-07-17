@@ -7,33 +7,44 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
 
-    use AuthenticatesUsers;
+    //funcion para inciar session
+    public function Login(){
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
+        //se crea las validaciones para los campos
+        $Datos = validator(request() -> all(),[
+            'email'         =>          'required|email',
+            'password'      =>          'required'
+        ]);
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
+        //se crea una array para los datosd de las credenciales
+        $Credenciales = array(
+            'email'         =>      request() -> input('email'),
+            'password'      =>      request() -> input('password')
+        );
+
+        //se hace un intento de autenticacion de el usuario
+        if(auth()-> attempt($Credenciales)){
+
+            //si funciono arrojara los datos el usuario logeado
+            return auth() -> user();
+
+        
+            //si la validacion fallo mostrara mensaje 
+        } else {
+
+            echo 'No se encontro el usuario';
+
+        }
+
     }
+
+    public function Salir(){
+
+        auth()->logout();
+
+        return redirect() -> route('Login');
+
+    }
+
 }
